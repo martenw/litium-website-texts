@@ -58,13 +58,19 @@ namespace Litium.Accelerator.Definitions.WebsiteTexts
                                 {
                                     // If the string should be avaliable on the server, in other words generated as defined only
                                     if (text.ServerAvailable)
-                                        website.Texts.AddOrUpdateValue(GetTextKey(textSource.Prefix, text.Id, false), textValue.Key, textValue.Value);
+                                    {
+                                        var textKey = GetTextKey(textSource.Prefix, text.Id, false);
+                                        AddOrUpdateValue(textSource, website, textValue, textKey);
+                                    }
 
                                     // If the string shold be avaliable on client, create another string with js.-prefix
                                     // this makes the string avaliable in clientscript from window.__litium.translation
                                     // See https://docs.litium.com/documentation/litium-accelerators/develop/architecture/accelerator-mvc
                                     if (text.ClientAvailable)
-                                        website.Texts.AddOrUpdateValue(GetTextKey(textSource.Prefix, text.Id, true), textValue.Key, textValue.Value);
+                                    {
+                                        var textKey = GetTextKey(textSource.Prefix, text.Id, true);
+                                        AddOrUpdateValue(textSource, website, textValue, textKey);
+                                    }
                                 }
                             }
                             catch (Exception exception)
@@ -79,6 +85,18 @@ namespace Litium.Accelerator.Definitions.WebsiteTexts
             catch (Exception exception)
             {
                 _logger.LogError("Error creating website texts", exception);
+            }
+        }
+
+        private static void AddOrUpdateValue(IWebsiteTextSource textSource, Website website, KeyValuePair<string, string> textValue, string textKey)
+        {
+            if (textSource.UpdateExistingTexts)
+            {
+                website.Texts.AddOrUpdateValue(textKey, textValue.Key, textValue.Value);
+            }
+            else if (!website.Texts.Keys.Contains(textKey))
+            {
+                website.Texts.AddOrUpdateValue(textKey, textValue.Key, textValue.Value);
             }
         }
 

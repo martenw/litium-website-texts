@@ -9,6 +9,8 @@ namespace Litium.Accelerator.Definitions.WebsiteTexts
     {
         string Prefix { get; }
 
+        bool UpdateExistingTexts { get; }
+
         List<WebsiteTextDefinition> GetTexts();
     }
 }

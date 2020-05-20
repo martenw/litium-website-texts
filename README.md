@@ -14,6 +14,7 @@ Create the folder _\Src\Litium.Accelerator\Definitions\WebsiteTexts_ in your acc
    2.  Adjust so that `GetTexts()` returns all strings you need to create, a string can be created on specific websites only or it can be created both as a server string or with the `js.`-prefix making it [avaliable to use on the client](https://docs.litium.com/documentation/litium-accelerators/develop/architecture/accelerator-mvc).
 
 The Sourcefile is resolved in `WebsiteTextSetup` which is executed as a startuptask whenever the application starts, it both deletes all strings that has the prefix defined in the source that are no longer in the source and it adds or updates all strings still in the source.
+`UpdateExistingTexts` Allows text to be changed in backoffice without beeing overwritten from code.
 
 ```C#
 using System;
@@ -24,6 +25,8 @@ namespace Litium.Accelerator.Definitions.WebsiteTexts
     public class SampleWebsiteTextSource : IWebsiteTextSource
     {
         public string Prefix => "MyCompanyWebsite";
+
+        public bool UpdateExistingTexts => true;
 
         public List<WebsiteTextDefinition> GetTexts()
         {
