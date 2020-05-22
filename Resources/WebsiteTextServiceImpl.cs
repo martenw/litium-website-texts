@@ -90,11 +90,9 @@ namespace Litium.Accelerator.Definitions.WebsiteTexts
 
         private static void AddOrUpdateValue(IWebsiteTextSource textSource, Website website, KeyValuePair<string, string> textValue, string textKey)
         {
-            if (textSource.UpdateExistingTexts)
-            {
-                website.Texts.AddOrUpdateValue(textKey, textValue.Key, textValue.Value);
-            }
-            else if (!website.Texts.Keys.Contains(textKey))
+            var textIsNew = !website.Texts.Keys.Contains(textKey);
+
+            if (textIsNew || textSource.UpdateExistingTexts)
             {
                 website.Texts.AddOrUpdateValue(textKey, textValue.Key, textValue.Value);
             }
