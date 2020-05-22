@@ -15,6 +15,8 @@ Create the folder _\Src\Litium.Accelerator\Definitions\WebsiteTexts_ in your acc
 
 The Sourcefile is resolved in `WebsiteTextSetup` which is executed as a startuptask whenever the application starts, it both deletes all strings that has the prefix defined in the source that are no longer in the source and it adds or updates all strings still in the source.
 
+Use the parameter `UpdateExistingTexts` to control if changes made in backoffice should be overwritten from code.
+
 ```C#
 using System;
 using System.Collections.Generic;
@@ -24,6 +26,8 @@ namespace Litium.Accelerator.Definitions.WebsiteTexts
     public class SampleWebsiteTextSource : IWebsiteTextSource
     {
         public string Prefix => "MyCompanyWebsite";
+
+        public bool UpdateExistingTexts => true;
 
         public List<WebsiteTextDefinition> GetTexts()
         {
