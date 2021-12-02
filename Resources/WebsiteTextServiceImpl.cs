@@ -54,13 +54,19 @@ namespace Litium.Accelerator.Definitions.WebsiteTexts
                                 if (text.WebsiteIds.Any() && !text.WebsiteIds.Any(w => website.SystemId.Equals(w)))
                                     continue;
 
+                                var serverTextKey = GetTextKey(textSource.Prefix, text.Id, false);
+                                var clientTextKey = GetTextKey(textSource.Prefix, text.Id, true);
+
+                                // If they dont exist here its a first time insert, so then insert all cultures
+                                var serverTextKeyInitialInsert = !website.Texts.Keys.Contains(serverTextKey);
+                                var clientTextKeyInitialInsert = !website.Texts.Keys.Contains(clientTextKey);
+                                
                                 foreach (var textValue in text.Name)
                                 {
                                     // If the string should be avaliable on the server, in other words generated as defined only
                                     if (text.ServerAvailable)
                                     {
-                                        var textKey = GetTextKey(textSource.Prefix, text.Id, false);
-                                        AddOrUpdateValue(textSource, website, textValue, textKey);
+                                        AddOrUpdateValue(textSource, website, textValue, serverTextKey, serverTextKeyInitialInsert);
                                     }
 
                                     // If the string shold be avaliable on client, create another string with js.-prefix
@@ -68,8 +74,7 @@ namespace Litium.Accelerator.Definitions.WebsiteTexts
                                     // See https://docs.litium.com/documentation/litium-accelerators/develop/architecture/accelerator-mvc
                                     if (text.ClientAvailable)
                                     {
-                                        var textKey = GetTextKey(textSource.Prefix, text.Id, true);
-                                        AddOrUpdateValue(textSource, website, textValue, textKey);
+                                        AddOrUpdateValue(textSource, website, textValue, clientTextKey, clientTextKeyInitialInsert);
                                     }
                                 }
                             }
@@ -88,11 +93,9 @@ namespace Litium.Accelerator.Definitions.WebsiteTexts
             }
         }
 
-        private static void AddOrUpdateValue(IWebsiteTextSource textSource, Website website, KeyValuePair<string, string> textValue, string textKey)
+        private static void AddOrUpdateValue(IWebsiteTextSource textSource, Website website, KeyValuePair<string, string> textValue, string textKey, bool initialInsert)
         {
-            var textIsNew = !website.Texts.Keys.Contains(textKey);
-
-            if (textIsNew || textSource.UpdateExistingTexts)
+            if (initialInsert || textSource.UpdateExistingTexts)
             {
                 website.Texts.AddOrUpdateValue(textKey, textValue.Key, textValue.Value);
             }
