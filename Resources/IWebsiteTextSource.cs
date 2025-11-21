@@ -1,16 +1,15 @@
 ﻿using System.Collections.Generic;
 using Litium.Runtime.DependencyInjection;
 
-namespace Litium.Accelerator.Definitions.WebsiteTexts
+namespace Litium.Accelerator.Definitions.WebsiteTexts;
+
+[Service(ServiceType = typeof(IWebsiteTextSource))]
+[RequireServiceImplementation]
+public interface IWebsiteTextSource
 {
-    [Service(ServiceType = typeof(IWebsiteTextSource))]
-    [RequireServiceImplementation]
-    public interface IWebsiteTextSource
-    {
-        string Prefix { get; }
+    string Prefix { get; }
 
-        bool UpdateExistingTexts { get; }
+    bool UpdateExistingTexts { get; }
 
-        List<WebsiteTextDefinition> GetTexts();
-    }
+    List<WebsiteTextDefinition> GetTexts();
 }

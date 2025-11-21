@@ -1,25 +1,22 @@
-﻿using Litium.Owin.Lifecycle;
+﻿using System.Threading;
+using System.Threading.Tasks;
+using JetBrains.Annotations;
+using Litium.Runtime;
 
-namespace Litium.Accelerator.Definitions.WebsiteTexts
+namespace Litium.Accelerator.Definitions.WebsiteTexts;
+
+[UsedImplicitly]
+[Autostart]
+public class WebsiteTextSetup(WebsiteTextService websiteTextService, IWebsiteTextSource websiteTextSource) : IAsyncAutostart
 {
-    public class WebsiteTextSetup : IStartupTask
+    public ValueTask StartAsync(CancellationToken cancellationToken)
     {
-        private readonly WebsiteTextService _websiteTextService;
-        private readonly IWebsiteTextSource _websiteTextSource;
+        // All definitions matching above prefix that are no longer in coded definitions are deleted from database
+        websiteTextService.DeleteMissingWebsiteTexts(websiteTextSource);
 
-        public WebsiteTextSetup(WebsiteTextService websiteTextService, IWebsiteTextSource websiteTextSource)
-        {
-            _websiteTextService = websiteTextService;
-            _websiteTextSource = websiteTextSource;
-        }
+        // Add any new text in coded definitions to database
+        websiteTextService.CreateWebsiteTexts(websiteTextSource);
 
-        public void Start()
-        {
-            // All definitions matching above prefix that are no longer in coded definitions are deleted from database
-            _websiteTextService.DeleteMissingWebsiteTexts(_websiteTextSource);
-
-            // Add any new text in coded definitions to database
-            _websiteTextService.CreateWebsiteTexts(_websiteTextSource);
-        }
+        return ValueTask.CompletedTask;
     }
 }
